@@ -7,7 +7,7 @@ app.use(express.json());
 
 const apiConfig = {
   endpoint: "https://api.openai.com/v1/chat/gpt",
-  apiKey: "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",
+  apiKey: "",
   defaultParams: {
     temperature: 0.5,
     max_tokens: 100,
