@@ -6,26 +6,40 @@ const API_KEY = "<YOUR_API_KEY>";
 
 app.use(express.json());
 
-app.post("/chat", async (req, res) => {
-  const prompt = req.body.prompt;
+const apiConfig = {
+  endpoint: "https://api.openai.com/v1/chat/gpt",
+  apiKey: "<YOUR_API_KEY>",
+  defaultParams: {
+    temperature: 0.5,
+    max_tokens: 100,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  },
+};
+
+async function generateResponse(prompt, params) {
+  const mergedParams = { ...apiConfig.defaultParams, ...params };
   const response = await axios.post(
-    "https://api.openai.com/v1/chat/gpt",
+    apiConfig.endpoint,
     {
       prompt: prompt,
-      temperature: 0.5,
-      max_tokens: 100,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      ...mergedParams,
     },
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${apiConfig.apiKey}`,
       },
     }
   );
-  const result = response.data.choices[0].text;
+  return response.data.choices[0].text;
+}
+
+app.post("/chat", async (req, res) => {
+  const prompt = req.body.prompt;
+  const params = {};
+  const result = await generateResponse(prompt, params);
   console.log(result);
   res.send(result);
 });
